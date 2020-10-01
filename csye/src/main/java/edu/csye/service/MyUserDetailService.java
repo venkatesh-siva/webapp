@@ -3,7 +3,6 @@ package edu.csye.service;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
-import org.hibernate.dialect.pagination.FirstLimitHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -52,6 +51,9 @@ public class MyUserDetailService implements UserDetailsService{
 		if(user.getUsername()==null || user.getPassword()==null || user.getFirst_name()==null || user.getLast_name() == null || 
 				user.getUsername().equals("") || user.getFirst_name().equals("") || user.getLast_name().equals("") || user.getPassword().equals(""))
 			throw new MandatoryFieldValueMissingException("Please fill out all mandatory fields: username, password, first_name, last_name");
+		
+		if(!UserNameValidationHelper.validateName(user.getFirst_name()) || !UserNameValidationHelper.validateName(user.getLast_name()))
+			throw new InvalidInputException("Please provide a proper name");
 		
 		boolean checkForUpdate = false;
 		
