@@ -1,0 +1,26 @@
+name: PR_check_master
+
+
+on:
+  pull_request:
+    branches:
+      - master
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: checkout repository
+        uses: actions/checkout@v2
+
+      - name: setup JDK 1.8
+        uses: actions/setup-java@1
+        with:
+          java-version: 1.8
+          
+      - name: Build with Maven
+        run: mvn -B packgae --file pom.xml
+
+
