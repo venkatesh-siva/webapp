@@ -24,10 +24,6 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
-                <goals>
-         			<goal>clean</goal>
-         			<goal>install</goal>
-       			</goals>
             </plugin>
         </plugins>
     </build>
