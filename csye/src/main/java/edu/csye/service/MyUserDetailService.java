@@ -3,6 +3,7 @@ package edu.csye.service;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
+import org.hibernate.dialect.pagination.FirstLimitHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import edu.csye.exception.InvalidInputException;
 import edu.csye.exception.LowPasswordStrengthException;
 import edu.csye.exception.MandatoryFieldValueMissingException;
 import edu.csye.exception.NoUpdateNeededException;
@@ -19,6 +21,7 @@ import edu.csye.helper.Base64Helper;
 import edu.csye.helper.BcryptHelper;
 import edu.csye.helper.DateHelper;
 import edu.csye.helper.PasswordStrengthValidationHelper;
+import edu.csye.helper.UserNameValidationHelper;
 import edu.csye.model.User;
 import edu.csye.repository.UserRepository;
 import edu.csye.repository.UserRepositoryFunctions;
@@ -49,8 +52,11 @@ public class MyUserDetailService implements UserDetailsService{
 		if(user.getUsername()==null || user.getPassword()==null || user.getFirst_name()==null || user.getLast_name() == null || 
 				user.getUsername().equals("") || user.getFirst_name().equals("") || user.getLast_name().equals("") || user.getPassword().equals(""))
 			throw new MandatoryFieldValueMissingException("Please fill out all mandatory fields: username, password, first_name, last_name");
+		
 		boolean checkForUpdate = false;
+		
 		String userName = Base64Helper.getUserName(Base64Helper.convertToSting(auth));
+		
 		if(!userName.equalsIgnoreCase(user.getUsername()))
 			throw new UserNotAuthorizedException("Sorry, Cannot change other users values");
 		User userDataBase =  fetchUser(userName);
@@ -64,27 +70,29 @@ public class MyUserDetailService implements UserDetailsService{
 			checkForUpdate =true;
 			Firstname = user.getFirst_name();
 		}
-		  if(!userDataBase.getLast_name().equalsIgnoreCase(user.getLast_name())) {
-			  checkForUpdate = true;
-			  lastNmae = user.getLast_name();
-		  }
-		  if(!userDataBase.getUsername().equalsIgnoreCase(user.getUsername())) {
-			   checkForUpdate = true;
-			   email = user.getUsername();
-		   }
-		  if(user.getPassword()!=null)
-		  {
-			  String unchangedPassword = user.getPassword();
-			  if(!BCrypt.checkpw(user.getPassword(), userDataBase.getPassword())){
-				  //BCrypt.checkpw(user.getPassword(), userDataBase.getPassword())
+		
+		if(!userDataBase.getLast_name().equalsIgnoreCase(user.getLast_name())) {
+			checkForUpdate = true;
+			lastNmae = user.getLast_name();
+		}
+		if(!userDataBase.getUsername().equalsIgnoreCase(user.getUsername())) {
+			checkForUpdate = true;
+			email = user.getUsername();
+		}
+		
+		if(user.getPassword()!=null)
+		{
+			String unchangedPassword = user.getPassword();
+			if(!BCrypt.checkpw(user.getPassword(), userDataBase.getPassword())){
+				//BCrypt.checkpw(user.getPassword(), userDataBase.getPassword())
 				  if(!PasswordStrengthValidationHelper.validatePassword(unchangedPassword)) {
 					  throw new LowPasswordStrengthException("Your password strength is low please try a different password with 5 to 8 characters and atleaset one number, one upper case and one lower case");
 				  }
 				  String newPassword = BcryptHelper.bcryptUserPassword(user).getPassword();
 				  checkForUpdate = true;
 				  password = newPassword;
-			  }
-		  }
+			 }
+		 }
 		if(!checkForUpdate) {
 			throw new NoUpdateNeededException("No change in any of the values provided");
 		}
@@ -104,8 +112,16 @@ public class MyUserDetailService implements UserDetailsService{
 		if(user.getUsername()==null || user.getPassword()==null || user.getFirst_name()==null || user.getLast_name() == null || 
 				user.getUsername().equals("") || user.getFirst_name().equals("") || user.getLast_name().equals("") || user.getPassword().equals(""))
 			throw new MandatoryFieldValueMissingException("Please fill out all mandatory fields: username, password, first_name, last_name");
+		
+		if(!UserNameValidationHelper.validateEmail(user.getUsername()))
+			throw new InvalidInputException("Please provide a proper email id in the username");
+		
+		if(!UserNameValidationHelper.validateName(user.getFirst_name()) || !UserNameValidationHelper.validateName(user.getLast_name()))
+			throw new InvalidInputException("Please provide a proper name");
+		
 		if(checkUserAlreadyExist(user.getUsername())) 
 			throw new UserAlreadyExistsException("Username already exist, please provide a different one");
+		
 		if(PasswordStrengthValidationHelper.validatePassword(user.getPassword())) {
 			user = BcryptHelper.bcryptUserPassword(user);
 			 String date = DateHelper.getTimeZoneDate();
@@ -115,7 +131,7 @@ public class MyUserDetailService implements UserDetailsService{
 			return storedData;
 		}
 		else 
-			throw new LowPasswordStrengthException("Your password strength is low please try a different password with 5 to 8 characters and atleaset one number, one upper case and one lower case");
+			throw new LowPasswordStrengthException("Your password strength is low please try a different password with minimum of 8 characters with atleaset one number, one upper case and one lower case");
 
 	}
 

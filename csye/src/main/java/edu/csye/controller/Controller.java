@@ -25,21 +25,21 @@ public class Controller {
 	private MyUserDetailService userDetailService;
 	
 	
-	@PostMapping("/v1/user")
+	@PostMapping(path="/v1/user", consumes= "application/json", produces="application/json")
 	public @ResponseBody ResponseEntity<User> createNewUser(@RequestBody User user) throws ParseException {
 		User storedData = userDetailService.createUser(user);
 		return new ResponseEntity<User>(storedData, HttpStatus.CREATED);	
 		}
 	
-	@GetMapping("/v1/user/self")
+	@GetMapping(path="/v1/user/self", consumes= "application/json", produces="application/json")
 	public @ResponseBody ResponseEntity<User> fetchUser(@RequestHeader(value="Authorization") String auth) throws UnsupportedEncodingException{
 		User userDetailsFromDatabase = userDetailService.fetchUser(Base64Helper.getUserName(Base64Helper.convertToSting(auth)));
 		return new ResponseEntity<User>(userDetailsFromDatabase, HttpStatus.OK);
 	}
 	
-	@PutMapping("/v1/user/self")
+	@PutMapping(path="/v1/user/self", consumes= "application/json", produces="application/json")
     public @ResponseBody ResponseEntity<Object> updateUserDetails(@RequestBody User user, @RequestHeader(value="Authorization") String auth) throws UnsupportedEncodingException, ParseException {
-		int userValue = userDetailService.updateUser(user, auth);
+		//int userValue = userDetailService.updateUser(user, auth);
 		return new ResponseEntity<Object>("", HttpStatus.NO_CONTENT);
     }
 	
