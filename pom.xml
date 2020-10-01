@@ -10,14 +10,13 @@
     <modules>
         <module>csye</module>
     </modules>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.3.4.RELEASE</version>
     </parent>
 
-    <build>
+     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -25,11 +24,15 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+                <goals>
+         			<goal>clean</goal>
+         			<goal>install</goal>
+       			</goals>
             </plugin>
         </plugins>
     </build>
 
-<properties>
+	<properties>
 		<java.version>11</java.version>
 	</properties>
 </project>
