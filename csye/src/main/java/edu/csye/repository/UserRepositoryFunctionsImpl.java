@@ -12,27 +12,8 @@ public class UserRepositoryFunctionsImpl implements UserRepositoryFunctions {
 	    EntityManager entityManager;
 
 	@Override
-	public int updateUserDetails(User user) {
-		String firstName = user.getFirst_name();
-        String lastName = user.getLast_name();
-        String email = user.getEmail_address();
-
-        int rowsAffected = 0;
-        Query query = entityManager.createNativeQuery("UPDATE user SET first_name= :firstName, last_name= :lastName  WHERE email_address = :email", User.class);
-
-
-
-        query=  entityManager.createNativeQuery("UPDATE user u"
-                        + "SET u.first_name = :firstName"
-                        + "WHERE u.email_address = :email");
-
-        rowsAffected = query.executeUpdate();
-        return rowsAffected;
-	}
-
-	@Override
 	public User getUserByEmail(String email) {
-		Query query = entityManager.createNativeQuery("SELECT * FROM user  WHERE email_address = :email", User.class);
+		Query query = entityManager.createNativeQuery("SELECT * FROM user  WHERE username = :email", User.class);
 
         query.setParameter("email", email);
         //System.out.println(query.getSingleResult());

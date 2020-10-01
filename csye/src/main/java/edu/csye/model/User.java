@@ -1,49 +1,53 @@
 package edu.csye.model;
 
 
-import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.ReadOnlyProperty;
 
-@Entity
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@Entity(name = "user")
 public class User {
 	
+	@Column(name = "first_name")
 	private String first_name;
 	
+	@Column(name = "last_name")
 	private String last_name;
 	
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@Column(name = "password")
 	private String password;
 	
-	private String email_address;
+	@Column(name = "username")
+	private String username;
 	
-	@CreationTimestamp
-	@Temporal(TemporalType.TIMESTAMP)
+	@ReadOnlyProperty
 	@Column(name = "account_created")
-	private Date account_created;
+	private String account_created;
 	
-	@UpdateTimestamp
-	@Temporal(TemporalType.TIMESTAMP)
+	@ReadOnlyProperty
 	@Column(name = "account_updated")
-	private Date account_updated;
+	private String account_updated;
 	
+	@ReadOnlyProperty
 	@Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer id;
+	@Column(name = "id")
+    private UUID id;
 
-	public Integer getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -63,12 +67,12 @@ public class User {
 		this.last_name = last_name;
 	}
 
-	public String getEmail_address() {
-		return email_address;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setEmail_address(String email_address) {
-		this.email_address = email_address;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getPassword() {
@@ -79,19 +83,19 @@ public class User {
 		this.password = password;
 	}
 
-	public Date getAccount_created() {
+	public String getAccount_created() {
 		return account_created;
 	}
 
-	public void setAccount_created(Date account_created) {
+	public void setAccount_created(String account_created) {
 		this.account_created = account_created;
 	}
 
-	public Date getAccount_updated() {
+	public String getAccount_updated() {
 		return account_updated;
 	}
 
-	public void setAccount_updated(Date account_updated) {
+	public void setAccount_updated(String account_updated) {
 		this.account_updated = account_updated;
 	}
 

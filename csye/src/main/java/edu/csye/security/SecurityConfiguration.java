@@ -21,27 +21,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired 
 	private UserDetailsService userDetailsService;
 	
-
-	
-	//@Override
-	//protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-	//	auth.userDetailsService(userDetailsService);
-	//}
-	
-	//@Bean
-	//public PasswordEncoder passwordEncoder() {
-	//	return NoOpPasswordEncoder.getInstance();
-	//}
-	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 	    http.
 	     authorizeRequests()
-	    .antMatchers("/v1/user/").permitAll()
+	    .antMatchers("/v1/user").permitAll()
 	    .anyRequest().authenticated()
 	    .and()
 	    .csrf().disable()
-	    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+	    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 	    .and()
 	    .httpBasic();
 	    
@@ -49,7 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	public void configure(WebSecurity web) throws Exception{
-		web.ignoring().antMatchers("/v1/user/");
+		web.ignoring().antMatchers("/v1/user");
 	}
 	
 	@Bean 

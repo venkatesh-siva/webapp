@@ -9,9 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.csye.model.User;
 @Primary
 public interface UserRepository extends JpaRepository<User, Integer>, UserRepositoryFunctions {
+	
 	@Transactional
     @Modifying
-    @Query(value = "UPDATE user u set first_name =?1 , last_name =?2 where u.email_address = ?3", nativeQuery = true)
-    int updateUser(String firstName, String lastName, String email);
+    @Query(value = "UPDATE user u set first_name =?1 , last_name =?2, u.password = ?4, u.account_updated = ?5 where u.username = ?3", nativeQuery = true)
+    int updateUser(String firstName, String lastName, String email, String password, String account_updated);
 	
 }
