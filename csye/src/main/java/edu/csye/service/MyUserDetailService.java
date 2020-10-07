@@ -143,8 +143,9 @@ public class MyUserDetailService implements UserDetailsService{
 		if(userId==null || userId.trim().equals(""))
 			throw new InvalidInputException("Not a valid userID");
 		Optional<User> userData = userRepository.findById(userId);
-		if(userData.isEmpty())
+		if(!userData.isPresent()) {
 			throw new UserNotFoundException("Can't find user with the id provided");
+		}
 		return userData.get();
 	}
 

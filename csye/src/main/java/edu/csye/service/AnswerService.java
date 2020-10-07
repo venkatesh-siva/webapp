@@ -51,7 +51,7 @@ public class AnswerService {
 			throw new InvalidInputException("Answer text is mandatory and missing value");
 		qestionService.getQuestion(questionId);
 		Optional<Answer> answerData = answersRepository.findById(answerId);
-		if(answerData.isEmpty())
+		if(!answerData.isPresent())
 			throw new AnswerNotFoundException("Answer ID does not exist");
 		Answer answerDB = answerData.get();
 		if(answerDB.getUser_id().equals(userId)){
@@ -64,7 +64,7 @@ public class AnswerService {
 	
 	public Answer getAnswer(String questionId, String answerId) {
 		Optional<Answer> answerData = answersRepository.findById(answerId);
-		if(answerData.isEmpty())
+		if(!answerData.isPresent())
 			throw new AnswerNotFoundException("Answer ID does not exist");
 		return answerData.get();
 	}
@@ -72,7 +72,7 @@ public class AnswerService {
 	public void deleteAnswer(String questionId, String answerId,String auth, String userId) {
 		qestionService.getQuestion(questionId);
 		Optional<Answer> answer = answersRepository.findById(answerId);
-		if(answer.isEmpty())
+		if(!answer.isPresent())
 			throw new AnswerNotFoundException("Answer ID does not exist");
 		Answer answerDB = answer.get();
 		if(answerDB.getUser_id().equals(userId)) {

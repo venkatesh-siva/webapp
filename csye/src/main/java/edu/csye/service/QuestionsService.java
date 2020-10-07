@@ -83,7 +83,7 @@ public class QuestionsService {
 	
 	public Question getQuestion(String questionId) {
 		Optional<Question> questionData = questionRepository.findById(questionId);
-		if(questionData.isEmpty())
+		if(!questionData.isPresent())
 			throw new QuestionNotFoundException("Question ID does not exist");
 		return questionData.get();
 	}
@@ -98,7 +98,7 @@ public class QuestionsService {
 		
 		User user = myUserDetailService.fetchUser(Base64Helper.getUserName(Base64Helper.convertToSting(auth)));
 		Optional<Question> question = questionRepository.findById(questionId);
-		if(question.isEmpty())
+		if(!question.isPresent())
 			throw new QuestionNotFoundException("Questoin ID does not exist");
 		Question questonDb = question.get();
 		if(questonDb.getAnswerList().size()>0)
@@ -117,7 +117,7 @@ public class QuestionsService {
 		if(question.getQuestion_text()==null || question.getQuestion_text().trim().equals(""))
 			throw new InvalidInputException("Questoin text is mandatory and missing");
 		Optional<Question> questionData = questionRepository.findById(questionId);
-		if(questionData.isEmpty())
+		if(!questionData.isPresent())
 			throw new QuestionNotFoundException("Question ID does not exist");
 		Question questionDB = questionData.get();
 		if(!questionDB.getUser_id().equals(UserId))
