@@ -3,6 +3,7 @@ package edu.csye.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,7 +26,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 	    http.
 	     authorizeRequests()
-	    .antMatchers("/v1/user").permitAll()
+	    .antMatchers(HttpMethod.POST,"/v1/user").permitAll()
+	    .antMatchers(HttpMethod.GET,"/v1/questions").permitAll()
+	    .antMatchers(HttpMethod.GET,"/v1/question/{questionId}").permitAll()
+	    .antMatchers(HttpMethod.GET,"/v1/user/{id}").permitAll()
+	    .antMatchers(HttpMethod.GET,"/v1/question/{questionId}/answer/{answerId}").permitAll()
 	    .anyRequest().authenticated()
 	    .and()
 	    .csrf().disable()
@@ -37,7 +42,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	public void configure(WebSecurity web) throws Exception{
-		web.ignoring().antMatchers("/v1/user");
+		web.ignoring().antMatchers(HttpMethod.POST,"/v1/user")
+		.antMatchers(HttpMethod.POST,"/v1/user")
+	    .antMatchers(HttpMethod.GET,"/v1/questions")
+	    .antMatchers(HttpMethod.GET,"/v1/question/{questionId}")
+	    .antMatchers(HttpMethod.GET,"/v1/user/{id}")
+	    .antMatchers(HttpMethod.GET,"/v1/question/{questionId}/answer/{answerId}");
 	}
 	
 	@Bean 

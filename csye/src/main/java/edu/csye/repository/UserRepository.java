@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.csye.model.User;
 @Primary
-public interface UserRepository extends JpaRepository<User, Integer>, UserRepositoryFunctions {
+public interface UserRepository extends JpaRepository<User, String>, UserRepositoryFunctions {
 	
 	@Transactional
     @Modifying
