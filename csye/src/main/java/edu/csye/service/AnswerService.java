@@ -1,7 +1,9 @@
 package edu.csye.service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import edu.csye.exception.UserNotAuthorizedException;
 import edu.csye.helper.Base64Helper;
 import edu.csye.helper.DateHelper;
 import edu.csye.model.Answer;
+import edu.csye.model.Question;
 import edu.csye.repository.AnswersRepository;
 
 @Service
@@ -49,7 +52,10 @@ public class AnswerService {
 	public void updateAnswer(String questionId, String answerId, Answer answer, String auth, String userId) {
 		if(answer.getAnswer_text()==null || answer.getAnswer_text().trim().equals(""))
 			throw new InvalidInputException("Answer text is mandatory and missing value");
-		qestionService.getQuestion(questionId);
+		Question question = qestionService.getQuestion(questionId);
+		List<Answer> flag = question.getAnswerList().stream().filter(f -> f.getAnswer_id().equals(answerId)).collect(Collectors.toList());
+		if(flag.isEmpty())
+			throw new AnswerNotFoundException("The question ID you have provided does not have the provided answer ID, kindly recheck");
 		Optional<Answer> answerData = answersRepository.findById(answerId);
 		if(!answerData.isPresent())
 			throw new AnswerNotFoundException("Answer ID does not exist");
@@ -63,6 +69,10 @@ public class AnswerService {
 	}
 	
 	public Answer getAnswer(String questionId, String answerId) {
+		Question question = qestionService.getQuestion(questionId);
+		List<Answer> flag = question.getAnswerList().stream().filter(f -> f.getAnswer_id().equals(answerId)).collect(Collectors.toList());
+		if(flag.isEmpty())
+			throw new AnswerNotFoundException("The question ID you have provided does not have the provided answer ID, kindly recheck");
 		Optional<Answer> answerData = answersRepository.findById(answerId);
 		if(!answerData.isPresent())
 			throw new AnswerNotFoundException("Answer ID does not exist");
@@ -70,7 +80,10 @@ public class AnswerService {
 	}
 	
 	public void deleteAnswer(String questionId, String answerId,String auth, String userId) {
-		qestionService.getQuestion(questionId);
+		Question question = qestionService.getQuestion(questionId);
+		List<Answer> flag = question.getAnswerList().stream().filter(f -> f.getAnswer_id().equals(answerId)).collect(Collectors.toList());
+		if(flag.isEmpty())
+			throw new AnswerNotFoundException("The question ID you have provided does not have the provided answer ID, kindly recheck");
 		Optional<Answer> answer = answersRepository.findById(answerId);
 		if(!answer.isPresent())
 			throw new AnswerNotFoundException("Answer ID does not exist");
