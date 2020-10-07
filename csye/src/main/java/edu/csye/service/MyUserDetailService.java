@@ -2,6 +2,7 @@ package edu.csye.service;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import edu.csye.exception.MandatoryFieldValueMissingException;
 import edu.csye.exception.NoUpdateNeededException;
 import edu.csye.exception.UserAlreadyExistsException;
 import edu.csye.exception.UserNotAuthorizedException;
+import edu.csye.exception.UserNotFoundException;
 import edu.csye.helper.Base64Helper;
 import edu.csye.helper.BcryptHelper;
 import edu.csye.helper.DateHelper;
@@ -135,6 +137,16 @@ public class MyUserDetailService implements UserDetailsService{
 		else 
 			throw new LowPasswordStrengthException("Your password strength is low please try a different password with minimum of 8 characters with atleaset one number, one upper case and one lower case");
 
+	}
+	
+	public User fetchUserById(String userId) {
+		if(userId==null || userId.trim().equals(""))
+			throw new InvalidInputException("Not a valid userID");
+		Optional<User> userData = userRepository.findById(userId);
+		if(!userData.isPresent()) {
+			throw new UserNotFoundException("Can't find user with the id provided");
+		}
+		return userData.get();
 	}
 
 }

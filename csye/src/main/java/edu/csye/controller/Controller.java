@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,12 @@ public class Controller {
 		return new ResponseEntity<User>(storedData, HttpStatus.CREATED);	
 		}
 	
+	@GetMapping(path="/v1/user/{id}", produces="application/json")
+	public @ResponseBody ResponseEntity<User> getUserByID(@PathVariable String id) {
+		User userDetailsFromDatabase = userDetailService.fetchUserById(id);
+		return new ResponseEntity<User>(userDetailsFromDatabase, HttpStatus.OK);
+	}
+	
 	@GetMapping(path="/v1/user/self", produces="application/json")
 	public @ResponseBody ResponseEntity<User> fetchUser(@RequestHeader(value="Authorization") String auth) throws UnsupportedEncodingException{
 		User userDetailsFromDatabase = userDetailService.fetchUser(Base64Helper.getUserName(Base64Helper.convertToSting(auth)));
@@ -42,5 +49,7 @@ public class Controller {
 		int userValue = userDetailService.updateUser(user, auth);
 		return new ResponseEntity<Object>("", HttpStatus.NO_CONTENT);
     }
+	
+	
 	
 }

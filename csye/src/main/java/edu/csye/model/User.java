@@ -1,14 +1,12 @@
 package edu.csye.model;
 
 
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.ReadOnlyProperty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,18 +35,15 @@ public class User {
 	@Column(name = "account_updated")
 	private String account_updated;
 	
-	@ReadOnlyProperty
 	@Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	@ReadOnlyProperty
 	@Column(name = "id")
-    private UUID id;
+    private String id;
 
-	public UUID getId() {
+	public String getId() {
 		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
 	}
 
 	public String getFirst_name() {
