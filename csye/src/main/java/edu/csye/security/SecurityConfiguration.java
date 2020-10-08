@@ -27,10 +27,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	    http.
 	     authorizeRequests()
 	    .antMatchers(HttpMethod.POST,"/v1/user").permitAll()
-	    .antMatchers(HttpMethod.GET,"/v1/questions").permitAll()
-	    .antMatchers(HttpMethod.GET,"/v1/question/{questionId}").permitAll()
-	    .antMatchers(HttpMethod.GET,"/v1/user/{id}").permitAll()
-	    .antMatchers(HttpMethod.GET,"/v1/question/{questionId}/answer/{answerId}").permitAll()
+	    .antMatchers(HttpMethod.GET,"/v1/questions","/v1/question/{questionId}","/v1/user/{id}","/v1/question/{questionId}/answer/{answerId}").permitAll()
+	    //.antMatchers(HttpMethod.GET,).permitAll()
+	    //.antMatchers(HttpMethod.GET,).permitAll()
+	    //.antMatchers(HttpMethod.GET,).permitAll()
 	    .anyRequest().authenticated()
 	    .and()
 	    .csrf().disable()
@@ -43,11 +43,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception{
 		web.ignoring().antMatchers(HttpMethod.POST,"/v1/user")
-		.antMatchers(HttpMethod.POST,"/v1/user")
-	    .antMatchers(HttpMethod.GET,"/v1/questions")
-	    .antMatchers(HttpMethod.GET,"/v1/question/{questionId}")
-	    .antMatchers(HttpMethod.GET,"/v1/user/{id}")
-	    .antMatchers(HttpMethod.GET,"/v1/question/{questionId}/answer/{answerId}");
+		//.antMatchers(HttpMethod.POST,"/v1/user")
+	    .antMatchers(HttpMethod.GET,"/v1/questions","/v1/question/{questionId}","/v1/user/{id}","/v1/question/{questionId}/answer/{answerId}");
+	    //.antMatchers(HttpMethod.GET,)
+	    //.antMatchers(HttpMethod.GET,)
+	    //.antMatchers(HttpMethod.GET,);
 	}
 	
 	@Bean 
