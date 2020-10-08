@@ -90,7 +90,7 @@ public class MyUserDetailService implements UserDetailsService{
 			if(!BCrypt.checkpw(user.getPassword(), userDataBase.getPassword())){
 				//BCrypt.checkpw(user.getPassword(), userDataBase.getPassword())
 				  if(!PasswordStrengthValidationHelper.validatePassword(unchangedPassword)) {
-					  throw new LowPasswordStrengthException("Your password strength is low please try a different password with 5 to 8 characters and atleaset one number, one upper case and one lower case");
+					  throw new LowPasswordStrengthException("Your password strength is low please try a different password with minimum of 8 characters with atleaset one number, one upper case and one lower case");
 				  }
 				  String newPassword = BcryptHelper.bcryptUserPassword(user).getPassword();
 				  checkForUpdate = true;

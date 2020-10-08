@@ -38,7 +38,7 @@ public class Question {
 	@NotNull 
 	private String question_text;
 	
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany
 	@JoinColumn(name = "question_ID")
 	private List<Answer> answerList;
 	

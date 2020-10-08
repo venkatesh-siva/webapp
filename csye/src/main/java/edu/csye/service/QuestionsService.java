@@ -12,6 +12,7 @@ import edu.csye.exception.InvalidInputException;
 import edu.csye.exception.QuestionNotFoundException;
 import edu.csye.exception.UserNotAuthorizedException;
 import edu.csye.helper.Base64Helper;
+import edu.csye.helper.CategoryNameValidatorHelper;
 import edu.csye.helper.DateHelper;
 import edu.csye.model.Category;
 import edu.csye.model.Question;
@@ -48,9 +49,9 @@ public class QuestionsService {
 		if(question.getCategories()!=null && question.getCategories().size()>0) {
 			
 		for(Category cat: question.getCategories()) {
-			//have to filter duplicates
+			if(CategoryNameValidatorHelper.validateCategoryName(cat.getCategory()))
+				throw new InvalidInputException("Category name cannot have special character");
 			String catLow = cat.getCategory().toLowerCase().trim();
-			//check for special char empty
 			if(catLow.equals(""))
 				throw new InvalidInputException("category value is missing");
 			if(!categories.contains(catLow))
@@ -121,19 +122,21 @@ public class QuestionsService {
 			throw new QuestionNotFoundException("Question ID does not exist");
 		Question questionDB = questionData.get();
 		if(!questionDB.getUser_id().equals(UserId))
-			throw new UserNotAuthorizedException("Sorry, question is created by another user, cannot delete the user with the given credentials");
+			throw new UserNotAuthorizedException("Sorry, question is created by another user, cannot update the user with the given credentials");
 		
 		//Question questionData = questionRepository.findById(questionId).get();
 		
 		//question.setUser_id(UserId);
+		if(question.getQuestion_text()!=null && !question.getQuestion_text().trim().equals("") && !question.getQuestion_text().equals(questionDB.getQuestion_text()))
+			questionDB.setQuestion_text(question.getQuestion_text());
 		
 		List<Category> catList = new ArrayList<Category>();
 		List<String> categories = new ArrayList<String>();
 		if(question.getCategories()!=null && question.getCategories().size()>0) {
 		for(Category cat: question.getCategories()) {
-			//have to filter duplicates
+			if(CategoryNameValidatorHelper.validateCategoryName(cat.getCategory()))
+				throw new InvalidInputException("Category name cannot have special character");
 			String catLow = cat.getCategory().toLowerCase().trim();
-			//check for special char empty
 			if(catLow.equals(""))
 				throw new InvalidInputException("category value is missing");
 			if(!categories.contains(catLow))
@@ -148,12 +151,12 @@ public class QuestionsService {
 				catList.add(fromDb);
 			}
 		}
+		}
 		
 		questionDB.setCategories(null);
 		
 		questionDB.setCategories(catList);
-		}
-		//question.setCreated_timestamp(questionData.getCreated_timestamp());
+		
 		questionDB.setUpdated_timeStamp(DateHelper.getTimeZoneDate());
 		questionRepository.save(questionDB);
 		

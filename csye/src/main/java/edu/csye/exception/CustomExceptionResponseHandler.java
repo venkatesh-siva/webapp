@@ -36,7 +36,7 @@ public class CustomExceptionResponseHandler extends ResponseEntityExceptionHandl
     @ExceptionHandler(UserNotAuthorizedException.class)
     @ResponseBody
     public final ResponseEntity<Object> handleUserNotAuthorizedException(UserNotAuthorizedException ex, WebRequest request) {
-        Response exceptionResponse = new Response(HttpStatus.BAD_REQUEST.toString(), ex.getMessage());
+        Response exceptionResponse = new Response(HttpStatus.UNAUTHORIZED.toString(), ex.getMessage());
         return new ResponseEntity(exceptionResponse.toString(), HttpStatus.UNAUTHORIZED);
     }
     
