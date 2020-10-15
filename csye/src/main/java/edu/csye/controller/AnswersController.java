@@ -47,7 +47,7 @@ public class AnswersController {
 	}
 	
 	@GetMapping(path="/v1/question/{questionId}/answer/{answerId}")
-	public @ResponseBody ResponseEntity<Answer> getAnswer(@PathVariable String answerId, @PathVariable String questionId,@RequestHeader(value="Authorization") String auth){
+	public @ResponseBody ResponseEntity<Answer> getAnswer(@PathVariable String answerId, @PathVariable String questionId){
 		Answer answerData = answerService.getAnswer(questionId, answerId);
 		return new ResponseEntity<Answer>(answerData, HttpStatus.OK);
 	}

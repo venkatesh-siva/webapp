@@ -40,13 +40,13 @@ public class QuestionsController {
 	}
 	
 	@GetMapping(path="/v1/question/{questionId}")
-	public @ResponseBody ResponseEntity<Question> getOneQuestion(@PathVariable String questionId,@RequestHeader(value="Authorization") String auth){
+	public @ResponseBody ResponseEntity<Question> getOneQuestion(@PathVariable String questionId){
 		Question questionData = questionsService.getQuestion(questionId);
 		return new ResponseEntity<Question>(questionData, HttpStatus.OK);
 	}
 	
 	@GetMapping(path="/v1/questions")
-	public @ResponseBody ResponseEntity<List<Question>> getAllQuestions(@RequestHeader(value="Authorization") String auth){
+	public @ResponseBody ResponseEntity<List<Question>> getAllQuestions(){
 		List<Question> questionData = questionsService.getQuestions();
 		return new ResponseEntity<List<Question>>(questionData, HttpStatus.OK);
 	}
