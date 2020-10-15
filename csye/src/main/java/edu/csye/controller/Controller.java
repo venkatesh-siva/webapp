@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.csye.exception.UserNotAuthorizedException;
 import edu.csye.helper.Base64Helper;
 import edu.csye.model.User;
 import edu.csye.service.MyUserDetailService;
@@ -41,6 +42,8 @@ public class Controller {
 	@GetMapping(path="/v1/user/self", produces="application/json")
 	public @ResponseBody ResponseEntity<User> fetchUser(@RequestHeader(value="Authorization") String auth) throws UnsupportedEncodingException{
 		User userDetailsFromDatabase = userDetailService.fetchUser(Base64Helper.getUserName(Base64Helper.convertToSting(auth)));
+		if(userDetailsFromDatabase == null)
+			throw new UserNotAuthorizedException("Unauthorized");
 		return new ResponseEntity<User>(userDetailsFromDatabase, HttpStatus.OK);
 	}
 	
