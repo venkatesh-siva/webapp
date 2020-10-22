@@ -14,13 +14,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sun.el.parser.ParseException;
 
 import edu.csye.model.Answer;
+import edu.csye.model.Question;
 import edu.csye.service.AnswerService;
+import edu.csye.service.ImageService;
 import edu.csye.service.UserPrincipal;
 
 @RestController
@@ -28,6 +32,9 @@ public class AnswersController {
 	
 	@Autowired
 	private AnswerService answerService;
+	
+	@Autowired
+	private ImageService imageService;
 	
 	@PostMapping(path="/v1/question/{questionId}/answer", consumes= "application/json", produces="application/json")
 	public @ResponseBody ResponseEntity<Answer> createAnswer(@PathVariable String questionId, @RequestBody Answer answer,@RequestHeader(value="Authorization") String auth, Principal principal) throws ParseException, UnsupportedEncodingException {
@@ -58,5 +65,24 @@ public class AnswersController {
 		String userId = userPrincipal.getUserID();
 		answerService.deleteAnswer(questionId, answerId, auth, userId);
 		return new ResponseEntity<Answer>(HttpStatus.NO_CONTENT);
+	}
+	
+	@PostMapping(path="/v1/question/{questionId}/answer/{answerId}/file")
+	public @ResponseBody ResponseEntity<Question> uplodaImage(@PathVariable String questionId,@PathVariable String answerId,@RequestPart(value = "file") MultipartFile multipartFile,@RequestHeader(value="Authorization") String auth, Principal principal) {
+		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
+		String userId = userPrincipal.getUserID();
+		imageService.uploadFile(multipartFile, questionId, answerId, userId);
+		return new ResponseEntity<Question>(HttpStatus.CREATED);
+	}
+	
+	@DeleteMapping(path="/v1/question/{questionId}/answer/{answerId}/file/{fileId}")
+	public @ResponseBody ResponseEntity<Question> deleteImage(@PathVariable String questionId,@PathVariable String answerId,@PathVariable String fileId,@RequestHeader(value="Authorization") String auth, Principal principal){
+		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
+		String userId = userPrincipal.getUserID();
+		String deleteResult = imageService.deleteFile(questionId, answerId, fileId, userId);
+		if(deleteResult == null) {
+			
+		}
+		return new ResponseEntity<Question>(HttpStatus.NO_CONTENT);
 	}
 }

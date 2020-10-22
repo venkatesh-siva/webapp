@@ -14,6 +14,7 @@ import edu.csye.exception.UserNotAuthorizedException;
 import edu.csye.helper.Base64Helper;
 import edu.csye.helper.DateHelper;
 import edu.csye.model.Answer;
+import edu.csye.model.Image;
 import edu.csye.model.Question;
 import edu.csye.repository.AnswersRepository;
 
@@ -28,6 +29,9 @@ public class AnswerService {
 	
 	@Autowired
 	QuestionsService qestionService;
+	
+	@Autowired
+	ImageService imageService;
 	
 	public Answer createAnswer(String questionId, Answer answer,String auth, String userID) throws UnsupportedEncodingException {
 		
@@ -89,7 +93,11 @@ public class AnswerService {
 			throw new AnswerNotFoundException("Answer ID does not exist");
 		Answer answerDB = answer.get();
 		if(answerDB.getUser_id().equals(userId)) {
-		answersRepository.delete(answerDB);
+			List<Image> attachments = answerDB.getAttachments();
+			for(Image image :attachments) {
+				imageService.deleteFile(questionId, answerId, image.getFile_id(),null);
+			}
+			answersRepository.delete(answerDB);
 		}
 		else
 			throw new UserNotAuthorizedException("Only user who submitted answer can delete");

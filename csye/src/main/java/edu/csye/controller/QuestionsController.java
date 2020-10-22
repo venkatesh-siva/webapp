@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import edu.csye.model.Question;
+import edu.csye.service.ImageService;
 import edu.csye.service.QuestionsService;
 import edu.csye.service.UserPrincipal;
 
@@ -28,6 +31,9 @@ public class QuestionsController {
 	
 	@Autowired
 	private QuestionsService questionsService;
+	
+	@Autowired
+	private ImageService imageService;
 	
 	
 	@PostMapping(path="/v1/question/", consumes= "application/json", produces="application/json")
@@ -64,6 +70,25 @@ public class QuestionsController {
 		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
 		String userId = userPrincipal.getUserID();
 		questionsService.updateQuestion(questionId, question, auth, userId);
+		return new ResponseEntity<Question>(HttpStatus.NO_CONTENT);
+	}
+	
+	@PostMapping(path="/v1/question/{questionId}/file")
+	public @ResponseBody ResponseEntity<Question> uplodaImage(@PathVariable String questionId,@RequestPart(value = "file") MultipartFile multipartFile,@RequestHeader(value="Authorization") String auth, Principal principal) {
+		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
+		String userId = userPrincipal.getUserID();
+		imageService.uploadFile(multipartFile, questionId, null, userId);
+		return new ResponseEntity<Question>(HttpStatus.CREATED);
+	}
+	
+	@DeleteMapping(path="/v1/question/{questionId}/file/{fileId}")
+	public @ResponseBody ResponseEntity<Question> deleteImage(@PathVariable String questionId,@PathVariable String fileId,@RequestHeader(value="Authorization") String auth, Principal principal){
+		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
+		String userId = userPrincipal.getUserID();
+		String deleteResult = imageService.deleteFile(questionId, null,fileId, userId);
+		if(deleteResult == null) {
+			
+		}
 		return new ResponseEntity<Question>(HttpStatus.NO_CONTENT);
 	}
 	

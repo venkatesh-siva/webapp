@@ -15,6 +15,7 @@ import edu.csye.helper.Base64Helper;
 import edu.csye.helper.CategoryNameValidatorHelper;
 import edu.csye.helper.DateHelper;
 import edu.csye.model.Category;
+import edu.csye.model.Image;
 import edu.csye.model.Question;
 import edu.csye.model.User;
 import edu.csye.repository.CategoryRepository;
@@ -31,6 +32,9 @@ public class QuestionsService {
 	
 	@Autowired
 	CategoryRepository  categoryRepo;
+	
+	@Autowired
+	ImageService imageService;
 	
 	public Question createQuestion(Question question, String auth, String userId) throws UnsupportedEncodingException {
 		
@@ -105,6 +109,10 @@ public class QuestionsService {
 		if(questonDb.getAnswerList().size()>0)
 			throw new InvalidInputException("Cannot delete question as it has answers");
 		if(questonDb.getUser_id().equals(UserId)) {
+			List<Image> attachments = questonDb.getAttachments();
+			for(Image image :attachments) {
+				imageService.deleteFile(questionId, null, image.getFile_id(),null);
+			}
 			questionRepository.delete(questonDb);
 		}
 		else

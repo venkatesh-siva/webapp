@@ -39,15 +39,28 @@ public class Question {
 	private String question_text;
 	
 	@OneToMany
-	@JoinColumn(name = "question_ID")
+	@JoinColumn(name = "question_id")
 	private List<Answer> answerList;
 	
 	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Category> categories;
+	
+	@OneToMany
+	@JoinColumn(name = "question_id")
+	private List<Image> attachments;
 
 	public Question() {
 		answerList = new ArrayList<Answer>();
 		categories = new ArrayList<Category>();
+		attachments = new ArrayList<Image>();
+	}
+
+	public List<Image> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(List<Image> attachments) {
+		this.attachments = attachments;
 	}
 
 	public String getQuestion_ID() {
