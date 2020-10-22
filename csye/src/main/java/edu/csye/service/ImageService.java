@@ -40,17 +40,17 @@ import edu.csye.repository.ImageRepository;
 @Service
 public class ImageService {
 	
-	@Value("${aws.accesskey}")
-	String access_key;
+	//@Value("${aws.accesskey}")
+	//String access_key;
 	
-	@Value("${aws.secretkey}")
-	String secret_key;
+	//@Value("${aws.secretkey}")
+	//String secret_key;
     
     @Value("${aws.s3.bucketname}")
     String bucketName;
 
-    @Value("${aws.s3.endpointURL}")
-    String endpointUrl;
+    //@Value("${aws.s3.endpointURL}")
+    //String endpointUrl;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -61,13 +61,13 @@ public class ImageService {
     @Autowired
     private AnswerService answerService;
     
-
+    @Autowired
     private AmazonS3 s3Client; 
     
-    @PostConstruct
-    private void initializeAmazon() {
-    	s3Client = new AmazonS3Client(new BasicAWSCredentials(access_key, secret_key));
-    }
+    //@PostConstruct
+    //private void initializeAmazon() {
+    //	s3Client = new AmazonS3Client(new BasicAWSCredentials(access_key, secret_key));
+    //}
     
 
     public void uploadFile(MultipartFile multipartFile, String questionId, String answerId, String userId) {
