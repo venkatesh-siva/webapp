@@ -1,5 +1,7 @@
 package edu.csye.exception;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -73,5 +75,32 @@ public class CustomExceptionResponseHandler extends ResponseEntityExceptionHandl
         Response exceptionResponse = new Response(HttpStatus.NOT_FOUND.toString(), ex.getMessage());
         return new ResponseEntity(exceptionResponse.toString(), HttpStatus.NOT_FOUND);
     }
+    
+    @ExceptionHandler(ImageNotFoundException.class)
+    @ResponseBody
+    public final ResponseEntity<Object> handleImageNotFoundException(ImageNotFoundException ex, WebRequest request) {
+        Response exceptionResponse = new Response(HttpStatus.NOT_FOUND.toString(), ex.getMessage());
+        return new ResponseEntity(exceptionResponse.toString(), HttpStatus.NOT_FOUND);
+    }
+    
+    @ExceptionHandler(UnsupportedImageException.class)
+    @ResponseBody
+    public final ResponseEntity<Object> handleUnsupportedImageException(UnsupportedImageException ex, WebRequest request) {
+        Response exceptionResponse = new Response(HttpStatus.BAD_REQUEST.toString(), ex.getMessage());
+        return new ResponseEntity(exceptionResponse.toString(), HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseBody
+    public final ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
+        Response exceptionResponse = new Response(HttpStatus.NOT_FOUND.toString(), "Data not found in the table");
+        return new ResponseEntity(exceptionResponse.toString(), HttpStatus.NOT_FOUND);
+    }
+    
+    @ExceptionHandler(ImageExistException.class)
+    @ResponseBody
+    public final ResponseEntity<Object> handleImageExistException(ImageExistException ex, WebRequest request) {
+        Response exceptionResponse = new Response(HttpStatus.BAD_REQUEST.toString(), ex.getMessage());
+        return new ResponseEntity(exceptionResponse.toString(), HttpStatus.BAD_REQUEST);
+    }
 }

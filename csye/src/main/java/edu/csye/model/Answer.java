@@ -1,10 +1,14 @@
 package edu.csye.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.ReadOnlyProperty;
@@ -31,6 +35,21 @@ public class Answer {
 	private String user_id;
 	
 	private String answer_text;
+	@OneToMany
+	@JoinColumn(name = "answer_id")
+	private List<Image> attachments;
+
+	public Answer() {
+		attachments = new ArrayList<Image>();
+	}
+
+	public List<Image> getAttachments() {
+		return attachments;
+	}
+
+	public void setAttachments(List<Image> attachments) {
+		this.attachments = attachments;
+	}
 
 	public String getAnswer_id() {
 		return answer_id;
