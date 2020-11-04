@@ -17,6 +17,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 
@@ -80,7 +81,8 @@ public class ImageService {
     		throw new UserNotAuthorizedException("Can't post image to other user's question");
         Image image = new Image();
         try {
-            File file = convertMultipartToFile(multipartFile);
+            //File file = convertMultipartToFile(multipartFile);
+        	
             String s3Object ;
             if(answerId==null)
             	s3Object= questionId+"/"+multipartFile.getOriginalFilename().replace(" ", "_");
@@ -89,14 +91,18 @@ public class ImageService {
             //PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, s3Object, file);
             //s3Client.putObject(putObjectRequest);
             Image imageDB = imageRepository.findByS3ObjectName(s3Object);
+            ObjectMetadata data = new ObjectMetadata();
+            data.setContentType(multipartFile.getContentType());
+            data.setContentLength(multipartFile.getSize());
             if(imageDB!=null)
             	throw new ImageExistException("Please provide a different image name");
             Tika tika = new Tika();
             String detectedType = tika.detect(multipartFile.getBytes());
             if(!"image/jpeg".equalsIgnoreCase(detectedType) && !"image/png".equalsIgnoreCase(detectedType) && !"image/jpg".equalsIgnoreCase(detectedType))
             	 throw new UnsupportedImageException("Please upload jpeg/jpg/png images");
-            
-            s3Client.putObject(new PutObjectRequest(bucketName, s3Object, file).withCannedAcl(CannedAccessControlList.PublicRead));
+            s3Client.putObject(new PutObjectRequest(bucketName, s3Object, multipartFile.getInputStream(), data).withCannedAcl(CannedAccessControlList.PublicRead));
+
+            //s3Client.putObject(new PutObjectRequest(bucketName, s3Object, file).withCannedAcl(CannedAccessControlList.PublicRead));
             //image.setIsbn(bookISBN);
             //image.setUserEmail(userEmail);
             image.setS3ObjectName(s3Object);
