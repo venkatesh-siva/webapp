@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 
 files:
-  - source: ./build/libs/ROOT.war
+  - source: ./csye/target/csye-0.0.1-SNAPSHOT.jar
     destination: /
 
 hooks:
