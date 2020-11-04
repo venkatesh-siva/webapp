@@ -5,18 +5,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.glue.model.EntityNotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -112,7 +108,7 @@ public class ImageService {
             	image.setAnswer_id(answerId);
             imageRepository.save(image);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new UnsupportedImageException("Unable to read file");
         }
     }
 
