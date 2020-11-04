@@ -3,8 +3,8 @@ name: Build & Deploy WebApp
 
 env:
   ARTIFACT_NAME: csye6225-webapp-${{ github.run_number }}.zip
-  CODEDEPLOY_APPLICATION_NAME: mywebapp
-  CODEDEPLOY_APPLICATION_DEPLOYMNET_GROUP_NAME: mywebapp
+  CODEDEPLOY_APPLICATION_NAME: csye6225-webapp
+  CODEDEPLOY_APPLICATION_DEPLOYMNET_GROUP_NAME: csye6225-webapp-deployment
   AWS_REGION: us-east-1
 
 on:
