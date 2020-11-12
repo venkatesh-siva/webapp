@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.apache.tika.Tika;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.timgroup.statsd.StatsDClient;
 
 import edu.csye.exception.AnswerNotFoundException;
 import edu.csye.exception.ImageExistException;
@@ -61,6 +64,11 @@ public class ImageService {
     @Autowired
     private AmazonS3 s3Client; 
     
+    private Logger logger = LoggerFactory.getLogger(ImageService.class);
+	
+	@Autowired
+    private StatsDClient stasDClient;
+    
     //@PostConstruct
     //private void initializeAmazon() {
     //	s3Client = new AmazonS3Client(new BasicAWSCredentials(access_key, secret_key));
@@ -68,6 +76,9 @@ public class ImageService {
     
 
     public void uploadFile(MultipartFile multipartFile, String questionId, String answerId, String userId) {
+    	logger.info("Info:Calling uploadFileService");
+		long begin = System.currentTimeMillis();
+		
     	Answer answer = null ;
     	Question question = null;
     	if(answerId!=null)
@@ -112,10 +123,19 @@ public class ImageService {
             	image.setQuestion_id(questionId);
             if(answerId!=null)
             	image.setAnswer_id(answerId);
+            long beginDB = System.currentTimeMillis();
             imageRepository.save(image);
+            long end = System.currentTimeMillis();
+            long timeTaken = end - beginDB;
+            logger.info("TIme taken by uploadFileDB " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("uploadFileDBTime", timeTaken);
         } catch (IOException e) {
             throw new UnsupportedImageException("Unable to read file");
         }
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by uploadFileService " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("uploadFileServiceTime", timeTaken);
     }
 
     private File convertMultipartToFile(MultipartFile file) throws IOException {
@@ -128,6 +148,9 @@ public class ImageService {
 
 
      public String deleteFile(String questionId, String answerId, String fieldId, String userId) {
+    	 logger.info("Info:Calling deleteFileService");
+ 		long begin = System.currentTimeMillis();
+ 		
     	 Image image;
     	 Answer answer = null ;
      	Question question = null;
@@ -159,7 +182,12 @@ public class ImageService {
         	S3Object s3object = s3Client.getObject(new GetObjectRequest(bucketName, name));
         	if(s3object != null) {
         		s3Client.deleteObject(new DeleteObjectRequest(bucketName, name));
+        		long beginDB = System.currentTimeMillis();
         		imageRepository.delete(image);
+        		long end = System.currentTimeMillis();
+                long timeTaken = end - beginDB;
+                logger.info("TIme taken by deleteFileDB " + timeTaken + "ms");
+                stasDClient.recordExecutionTime("deleteFileDBTime", timeTaken);
         		return "SUCCESS";
         	}else {
                 throw new ImageNotFoundException("Image not found!!!");
@@ -170,6 +198,10 @@ public class ImageService {
         }catch(EntityNotFoundException e) {
         	throw new ImageNotFoundException("Provided fieldId not found in the database");
         }
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by deleteFileService " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("deleteFileServiceTime", timeTaken);
         return null;
      }
 }
