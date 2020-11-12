@@ -4,12 +4,16 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+
+import com.timgroup.statsd.StatsDClient;
 
 import edu.csye.exception.InvalidInputException;
 import edu.csye.exception.LowPasswordStrengthException;
@@ -36,6 +40,11 @@ public class MyUserDetailService implements UserDetailsService{
 	@Autowired
 	private UserRepositoryFunctions repo;
 	
+	private Logger logger = LoggerFactory.getLogger(MyUserDetailService.class);
+	
+	@Autowired
+    private StatsDClient stasDClient;
+	
 	public boolean checkUserAlreadyExist(String username) {
 		try {
 			loadUserByUsername(username);
@@ -50,6 +59,9 @@ public class MyUserDetailService implements UserDetailsService{
 	}
 	
 	public int updateUser(User user, String auth) throws UnsupportedEncodingException, ParseException {
+		logger.info("Info:Calling updateUserService");
+		long begin = System.currentTimeMillis();
+		
 		if(user.getUsername()==null || user.getPassword()==null || user.getFirst_name()==null || user.getLast_name() == null || 
 				user.getUsername().equals("") || user.getFirst_name().equals("") || user.getLast_name().equals("") || user.getPassword().equals(""))
 			throw new MandatoryFieldValueMissingException("Please fill out all mandatory fields: username, password, first_name, last_name");
@@ -100,8 +112,21 @@ public class MyUserDetailService implements UserDetailsService{
 		if(!checkForUpdate) {
 			throw new NoUpdateNeededException("No change in any of the values provided");
 		}
-			
-		return userRepository.updateUser(Firstname, lastNmae, email, password, DateHelper.getTimeZoneDate());
+		
+		long beginDB = System.currentTimeMillis();
+        
+		int userUpdate = userRepository.updateUser(Firstname, lastNmae, email, password, DateHelper.getTimeZoneDate());
+		
+		long end = System.currentTimeMillis();
+		long timeTakenDB = end - beginDB;
+        logger.info("TIme taken by updateUserService " + timeTakenDB + "ms");
+        stasDClient.recordExecutionTime("updateUserServiceTime", timeTakenDB);
+		
+		long timeTaken = end - begin;
+        logger.info("TIme taken by updateUserService " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("updateUserServiceTime", timeTaken);
+		
+		return userUpdate;
 	}
 
 	@Override
@@ -113,6 +138,9 @@ public class MyUserDetailService implements UserDetailsService{
 	}
 	
 	public User createUser(User user) throws ParseException {
+		logger.info("Info:Calling createUserService");
+		long begin = System.currentTimeMillis();
+		
 		if(user.getUsername()==null || user.getPassword()==null || user.getFirst_name()==null || user.getLast_name() == null || 
 				user.getUsername().equals("") || user.getFirst_name().equals("") || user.getLast_name().equals("") || user.getPassword().equals(""))
 			throw new MandatoryFieldValueMissingException("Please fill out all mandatory fields: username, password, first_name, last_name");
@@ -131,7 +159,16 @@ public class MyUserDetailService implements UserDetailsService{
 			 String date = DateHelper.getTimeZoneDate();
 			user.setAccount_created(date);
 			user.setAccount_updated(date);
+			long beginDB = System.currentTimeMillis();
 			User storedData = userRepository.save(user);
+			long end = System.currentTimeMillis();
+			long timeTakenDB = end - beginDB;
+	        logger.info("TIme taken by createUserServiceDB " + timeTakenDB + "ms");
+	        stasDClient.recordExecutionTime("createUserServiceDBTime", timeTakenDB);
+			end = System.currentTimeMillis();
+			long timeTaken = end - begin;
+	        logger.info("TIme taken by createUserService " + timeTaken + "ms");
+	        stasDClient.recordExecutionTime("createUserServiceTime", timeTaken);
 			return storedData;
 		}
 		else 
@@ -140,12 +177,24 @@ public class MyUserDetailService implements UserDetailsService{
 	}
 	
 	public User fetchUserById(String userId) {
+		logger.info("Info:Calling fetchUserByIdService");
+		long begin = System.currentTimeMillis();
+		
 		if(userId==null || userId.trim().equals(""))
 			throw new InvalidInputException("Not a valid userID");
+		long beginDB = System.currentTimeMillis();
 		Optional<User> userData = userRepository.findById(userId);
+		long end = System.currentTimeMillis();
+		long timeTakenDB = end - beginDB;
+        logger.info("TIme taken by fetchUserByIdDB " + timeTakenDB + "ms");
+        stasDClient.recordExecutionTime("fetchUserByIdDBTime", timeTakenDB);
 		if(!userData.isPresent()) {
 			throw new UserNotFoundException("Can't find user with the id provided");
 		}
+		end = System.currentTimeMillis();
+		long timeTaken = end - begin;
+        logger.info("TIme taken by fetchUserByIdService " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("fetchUserByIdServiceTime", timeTaken);
 		return userData.get();
 	}
 

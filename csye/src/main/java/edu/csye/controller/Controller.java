@@ -37,51 +37,43 @@ public class Controller {
 	
 	
 	@PostMapping(path="/v1/user", consumes= "application/json", produces="application/json")
-	public @ResponseBody ResponseEntity<User> createNewUser(@RequestBody User user)  {
+	public @ResponseBody ResponseEntity<User> createNewUser(@RequestBody User user) throws ParseException  {
 		logger.info("Info:Calling createNewUserApi");
 		long begin = System.currentTimeMillis();
         stasDClient.incrementCounter("createNewUserApi");
-        User storedData = null;
-        try {
-            long beginDB = System.currentTimeMillis();
-            storedData = userDetailService.createUser(user);
+        User storedData = userDetailService.createUser(user);
             long end = System.currentTimeMillis();
             long timeTaken = end - begin;
-            long timeTakenByDBQuery = end - beginDB;
-            stasDClient.recordExecutionTime("DB-registerNewUserDBQueryTime", timeTakenByDBQuery);
+            //long timeTakenByDBQuery = end - beginDB;
+            //stasDClient.recordExecutionTime("DB-registerNewUserDBQueryTime", timeTakenByDBQuery);
             logger.info("TIme taken by createNewUser API " + timeTaken + "ms");
-            stasDClient.recordExecutionTime("createNewUser", timeTaken);
-            return new ResponseEntity<User>(storedData, HttpStatus.CREATED);
-        } catch (Exception e) {
-            logger.error("Exception while creating new User: "+e);
-        }
-		
-		return null;	
+            stasDClient.recordExecutionTime("createNewUserApiTime", timeTaken);
+            return new ResponseEntity<User>(storedData, HttpStatus.CREATED);  
 		}
 	
 	@GetMapping(path="/v1/user/{id}", produces="application/json")
 	public @ResponseBody ResponseEntity<User> getUserByID(@PathVariable String id) {
 		logger.info("Info:Calling getUserByIDApi");
-        stasDClient.incrementCounter("updateUserApi");
+        stasDClient.incrementCounter("getUserByIDApi");
         long begin = System.currentTimeMillis();
 		User userDetailsFromDatabase = userDetailService.fetchUserById(id);
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by updateUserApi API " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("DB-updateUserApiTime", timeTaken);
+        stasDClient.recordExecutionTime("getUserByIDApiTime", timeTaken);
 		return new ResponseEntity<User>(userDetailsFromDatabase, HttpStatus.OK);
 	}
 	
 	@GetMapping(path="/v1/user/self", produces="application/json")
 	public @ResponseBody ResponseEntity<User> fetchUser(@RequestHeader(value="Authorization") String auth) throws UnsupportedEncodingException{
 		logger.info("Info:Calling fetchUserApi");
-		stasDClient.incrementCounter("updateUserApi");
+		stasDClient.incrementCounter("fetchUserApi");
         long begin = System.currentTimeMillis();
 		User userDetailsFromDatabase = userDetailService.fetchUser(Base64Helper.getUserName(Base64Helper.convertToSting(auth)));
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
-        logger.info("TIme taken by updateUserApi API " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("DB-updateUserApiTime", timeTaken);
+        logger.info("TIme taken by fetchUser API " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("fetchUserApiTime", timeTaken);
 		if(userDetailsFromDatabase == null)
 			throw new UserNotAuthorizedException("Unauthorized");
 		return new ResponseEntity<User>(userDetailsFromDatabase, HttpStatus.OK);
@@ -95,8 +87,8 @@ public class Controller {
 		int userValue = userDetailService.updateUser(user, auth);
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
-        logger.info("TIme taken by updateUserApi API " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("DB-updateUserApiTime", timeTaken);
+        logger.info("TIme taken by updateUser API " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("updateUserDetailsApi", timeTaken);
 		return new ResponseEntity<Object>("", HttpStatus.NO_CONTENT);
     }
 	
