@@ -59,7 +59,7 @@ public class Controller {
 		User userDetailsFromDatabase = userDetailService.fetchUserById(id);
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
-        logger.info("TIme taken by updateUserApi API " + timeTaken + "ms");
+        logger.info("TIme taken by getUserByIDApi API " + timeTaken + "ms");
         stasDClient.recordExecutionTime("getUserByIDApiTime", timeTaken);
 		return new ResponseEntity<User>(userDetailsFromDatabase, HttpStatus.OK);
 	}
