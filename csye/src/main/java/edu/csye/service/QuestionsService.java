@@ -75,7 +75,11 @@ public class QuestionsService {
 				if(fromDb == null) {
 					cat.setCategory(catLow);
 					fromDb = cat;
+					try {
 					fromDb = categoryRepo.save(fromDb);
+					}catch(Exception e) {
+						fromDb = categoryRepo.findByCategory(catLow);
+					}
 				}
 				categories.add(catLow);
 				catList.add(fromDb);

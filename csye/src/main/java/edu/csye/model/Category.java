@@ -1,7 +1,6 @@
 package edu.csye.model;
 
-import java.util.UUID;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,6 +17,7 @@ public class Category {
 	@ReadOnlyProperty
 	private String category_id;
 	
+	@Column(unique = true)
 	private String category;
 
 	public String getCategory_id() {
