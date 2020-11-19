@@ -111,8 +111,13 @@ public class ImageService {
             String detectedType = tika.detect(multipartFile.getBytes());
             if(!"image/jpeg".equalsIgnoreCase(detectedType) && !"image/png".equalsIgnoreCase(detectedType) && !"image/jpg".equalsIgnoreCase(detectedType))
             	 throw new UnsupportedImageException("Please upload jpeg/jpg/png images");
+            
+            long beginS3 = System.currentTimeMillis();
             s3Client.putObject(new PutObjectRequest(bucketName, s3Object, multipartFile.getInputStream(), data).withCannedAcl(CannedAccessControlList.PublicRead));
-
+            long end = System.currentTimeMillis();
+            long timeTakenS3 = end - beginS3;
+            logger.info("Time taken by s3 web call upload" + timeTakenS3 + "ms");
+            stasDClient.recordExecutionTime("uploadS3Time", timeTakenS3);
             //s3Client.putObject(new PutObjectRequest(bucketName, s3Object, file).withCannedAcl(CannedAccessControlList.PublicRead));
             //image.setIsbn(bookISBN);
             //image.setUserEmail(userEmail);
@@ -125,7 +130,7 @@ public class ImageService {
             	image.setAnswer_id(answerId);
             long beginDB = System.currentTimeMillis();
             imageRepository.save(image);
-            long end = System.currentTimeMillis();
+            end = System.currentTimeMillis();
             long timeTaken = end - beginDB;
             logger.info("TIme taken by uploadFileDB " + timeTaken + "ms");
             stasDClient.recordExecutionTime("uploadFileDBTime", timeTaken);
@@ -181,10 +186,15 @@ public class ImageService {
         try{
         	S3Object s3object = s3Client.getObject(new GetObjectRequest(bucketName, name));
         	if(s3object != null) {
+        		long beginS3 = System.currentTimeMillis();
         		s3Client.deleteObject(new DeleteObjectRequest(bucketName, name));
+        		long end = System.currentTimeMillis();
+                long timeTakenS3 = end - beginS3;
+                logger.info("Time taken by s3 web call delete" + timeTakenS3 + "ms");
+                stasDClient.recordExecutionTime("deleteS3Time", timeTakenS3);
         		long beginDB = System.currentTimeMillis();
         		imageRepository.delete(image);
-        		long end = System.currentTimeMillis();
+        		end = System.currentTimeMillis();
                 long timeTaken = end - beginDB;
                 logger.info("TIme taken by deleteFileDB " + timeTaken + "ms");
                 stasDClient.recordExecutionTime("deleteFileDBTime", timeTaken);
