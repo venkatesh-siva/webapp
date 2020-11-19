@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,7 @@ public class QuestionsService {
 					fromDb = cat;
 					try {
 					fromDb = categoryRepo.save(fromDb);
-					}catch(Exception e) {
+					}catch(ConstraintViolationException e) {
 						fromDb = categoryRepo.findByCategory(catLow);
 					}
 				}
@@ -214,7 +215,11 @@ public class QuestionsService {
 				if(fromDb == null) {
 					cat.setCategory(catLow);
 					fromDb = cat;
-					fromDb = categoryRepo.save(fromDb);
+					try {
+						fromDb = categoryRepo.save(fromDb);
+					}catch(ConstraintViolationException e) {
+						fromDb = categoryRepo.findByCategory(catLow);
+					}
 				}
 				categories.add(catLow);
 				catList.add(fromDb);
