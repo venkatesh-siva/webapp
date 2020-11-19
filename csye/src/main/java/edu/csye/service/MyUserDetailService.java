@@ -160,7 +160,12 @@ public class MyUserDetailService implements UserDetailsService{
 			user.setAccount_created(date);
 			user.setAccount_updated(date);
 			long beginDB = System.currentTimeMillis();
-			User storedData = userRepository.save(user);
+			User storedData;
+			try {
+				storedData = userRepository.save(user);
+			}catch(Exception e) {
+				throw new UserAlreadyExistsException("Username already exist, please provide a different one");
+			}
 			long end = System.currentTimeMillis();
 			long timeTakenDB = end - beginDB;
 	        logger.info("TIme taken by createUserServiceDB " + timeTakenDB + "ms");
