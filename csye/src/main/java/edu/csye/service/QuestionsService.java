@@ -79,6 +79,10 @@ public class QuestionsService {
 					try {
 					fromDb = categoryRepo.save(fromDb);
 					}catch(ConstraintViolationException e) {
+						logger.error("ConstraintViolationException occured while updating: "+e);
+						fromDb = categoryRepo.findByCategory(catLow);
+					}catch(Exception e) {
+						logger.error("Exception occured while updating: "+e);
 						fromDb = categoryRepo.findByCategory(catLow);
 					}
 				}
@@ -218,6 +222,11 @@ public class QuestionsService {
 					try {
 						fromDb = categoryRepo.save(fromDb);
 					}catch(ConstraintViolationException e) {
+						logger.error("ConstraintViolationException occured while updating: "+e);
+						fromDb = categoryRepo.findByCategory(catLow);
+					}
+					catch(Exception e) {
+						logger.error("Exception occured while updating: "+e);
 						fromDb = categoryRepo.findByCategory(catLow);
 					}
 				}
