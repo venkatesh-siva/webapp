@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Optional;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,7 +164,7 @@ public class MyUserDetailService implements UserDetailsService{
 			User storedData;
 			try {
 				storedData = userRepository.save(user);
-			}catch(Exception e) {
+			}catch(ConstraintViolationException e) {
 				throw new UserAlreadyExistsException("Username already exist, please provide a different one");
 			}
 			long end = System.currentTimeMillis();
