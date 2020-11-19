@@ -164,7 +164,7 @@ public class MyUserDetailService implements UserDetailsService{
 			User storedData;
 			try {
 				storedData = userRepository.save(user);
-			}catch(ConstraintViolationException e) {
+			}catch(Exception e) {
 				throw new UserAlreadyExistsException("Username already exist, please provide a different one");
 			}
 			long end = System.currentTimeMillis();
