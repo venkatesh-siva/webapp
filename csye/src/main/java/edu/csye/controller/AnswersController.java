@@ -26,8 +26,12 @@ import com.timgroup.statsd.StatsDClient;
 
 import edu.csye.model.Answer;
 import edu.csye.model.Question;
+import edu.csye.model.User;
+import edu.csye.security.AmazonSNSClient;
 import edu.csye.service.AnswerService;
 import edu.csye.service.ImageService;
+import edu.csye.service.MyUserDetailService;
+import edu.csye.service.QuestionsService;
 import edu.csye.service.UserPrincipal;
 
 @RestController
@@ -44,6 +48,15 @@ public class AnswersController {
 	@Autowired
     private StatsDClient stasDClient;
 	
+	@Autowired
+	private AmazonSNSClient snsClient;
+	
+	@Autowired
+	private QuestionsService questionService;
+	
+	@Autowired
+	private MyUserDetailService userService; 
+	
 	@PostMapping(path="/v1/question/{questionId}/answer", consumes= "application/json", produces="application/json")
 	public @ResponseBody ResponseEntity<Answer> createAnswer(@PathVariable String questionId, @RequestBody Answer answer,@RequestHeader(value="Authorization") String auth, Principal principal) throws ParseException, UnsupportedEncodingException {
 		logger.info("Info:Calling createAnswerApi");
@@ -53,7 +66,9 @@ public class AnswersController {
 		String userId = userPrincipal.getUserID();
 
 		Answer storedData = answerService.createAnswer(questionId,answer, auth, userId);
-		
+		Question question = questionService.getQuestion(questionId);
+		User user = userService.fetchUserById(question.getUser_id());
+		snsClient.publish(user.getUsername()+","+questionId+",createanswer");
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by createAnswer API " + timeTaken + "ms");
@@ -69,6 +84,9 @@ public class AnswersController {
 		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
 		String userId = userPrincipal.getUserID();
 		answerService.updateAnswer(questionId, answerId, answer, auth, userId);
+		Question question = questionService.getQuestion(questionId);
+		User user = userService.fetchUserById(question.getUser_id());
+		snsClient.publish(user.getUsername()+","+questionId+",updateanswer");
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by updateAnswer API " + timeTaken + "ms");
@@ -97,6 +115,9 @@ public class AnswersController {
 		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
 		String userId = userPrincipal.getUserID();
 		answerService.deleteAnswer(questionId, answerId, auth, userId);
+		Question question = questionService.getQuestion(questionId);
+		User user = userService.fetchUserById(question.getUser_id());
+		snsClient.publish(user.getUsername()+","+questionId+",deleteanswer");
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by deleteAnswer API " + timeTaken + "ms");
