@@ -26,7 +26,7 @@ public class AmazonSNSClient {
     }
 
     public void publish(String message) {
-        final PublishRequest publishRequest = new PublishRequest("arn:aws:sns:us-east-1:371394122941:password-reset", message);
+        final PublishRequest publishRequest = new PublishRequest("arn:aws:sns:us-east-1:599351014538:email-customer", message);
         logger.info("AmazonSNSClientClass- Published Request : " + publishRequest.toString() + "----");
         final PublishResult publishResponse = snsClient.publish(publishRequest);
         logger.info("AmazonSNSClientClass- Published message with messageId :- " + publishResponse.getMessageId());
