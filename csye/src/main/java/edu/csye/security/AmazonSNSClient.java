@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.CreateTopicResult;
@@ -26,7 +27,7 @@ public class AmazonSNSClient {
 	public AmazonSNSClient(){
 		
 	    InstanceProfileCredentialsProvider provider = new InstanceProfileCredentialsProvider(true);
-	    this.snsClient =  AmazonSNSClientBuilder.standard().withCredentials(provider).withRegion("us-east-1").build();
+	    this.snsClient =  AmazonSNSClientBuilder.standard().withCredentials(provider).withRegion(Regions.US_EAST_1).build();
 	    this.topic = snsClient.createTopic("email-customer");
 	    topicArn=topic.getTopicArn();
 	}
