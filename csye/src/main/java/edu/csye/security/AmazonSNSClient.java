@@ -27,7 +27,7 @@ public class AmazonSNSClient {
 		
 	    InstanceProfileCredentialsProvider provider = new InstanceProfileCredentialsProvider(true);
 	    this.snsClient =  AmazonSNSClientBuilder.standard().withCredentials(provider).withRegion("us-east-1").build();
-	    this.topic = snsClient.createTopic("TOPIC_EMAIL");
+	    this.topic = snsClient.createTopic("email-customer");
 	    topicArn=topic.getTopicArn();
 	}
 
