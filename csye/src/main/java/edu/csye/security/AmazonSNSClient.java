@@ -3,7 +3,6 @@ package edu.csye.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
@@ -17,8 +16,8 @@ import com.amazonaws.services.sns.model.PublishResult;
 
 @Service("amazonSNSService")
 public class AmazonSNSClient {
-	@Value("${AWS_REGION}")
-	private String region;
+	//@Value("${AWS_REGION}")
+	//private String region;
 	private AmazonSNS snsClient;
 	private CreateTopicResult topic;
 	private final static Logger logger = LoggerFactory.getLogger(AmazonSNSClient.class);
@@ -27,7 +26,7 @@ public class AmazonSNSClient {
 	public AmazonSNSClient(){
 		
 	    InstanceProfileCredentialsProvider provider = new InstanceProfileCredentialsProvider(true);
-	    this.snsClient =  AmazonSNSClientBuilder.standard().withCredentials(provider).withRegion(region).build();
+	    this.snsClient =  AmazonSNSClientBuilder.standard().withCredentials(provider).withRegion("us-east-1").build();
 	    this.topic = snsClient.createTopic("TOPIC_EMAIL");
 	    topicArn=topic.getTopicArn();
 	}
