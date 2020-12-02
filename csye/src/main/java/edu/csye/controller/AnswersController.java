@@ -71,8 +71,8 @@ public class AnswersController {
 			User user = userService.fetchUserById(question.getUser_id());
 			String getHashValue = user.getUsername()+questionId+storedData.getAnswer_id()+storedData.getAnswer_text();
 			snsClient.publish(user.getUsername()+","+questionId+","+storedData.getAnswer_id()+","+
-					"http://prod.venkateshcsye6225.me//v1/question/"+questionId+","+
-					"http://prod.venkateshcsye6225.me//v1/question/"+questionId+"/answer/"+storedData.getAnswer_id()+
+					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+","+
+					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+"/answer/"+storedData.getAnswer_id()+
 					",createanswer,"+getHashValue.hashCode());
 		}
 		long end = System.currentTimeMillis();
@@ -93,10 +93,10 @@ public class AnswersController {
 		if(answer!=null) {
 			Question question = questionService.getQuestion(questionId);
 			User user = userService.fetchUserById(question.getUser_id());
-			String getHashValue = user.getUsername()+questionId+answer.getAnswer_id()+answer.getAnswer_text();
+			String getHashValue = user.getUsername()+questionId+answerId+answer.getAnswer_text();
 			snsClient.publish(user.getUsername()+","+questionId+","+answer.getAnswer_id()+","+
-					"http://prod.venkateshcsye6225.me//v1/question/"+questionId+","+
-					"http://prod.venkateshcsye6225.me//v1/question/"+questionId+"/answer/"+answer.getAnswer_id()+
+					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+","+
+					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+"/answer/"+answer.getAnswer_id()+
 					",updateanswer,"+getHashValue.hashCode());
 			//snsClient.publish(user.getUsername()+","+questionId+",updateanswer");
 		}
@@ -133,7 +133,7 @@ public class AnswersController {
 		User user = userService.fetchUserById(question.getUser_id());
 		String getHashValue = user.getUsername()+questionId+answerId;
 		snsClient.publish(user.getUsername()+","+questionId+","+answerId+","+
-				"http://prod.venkateshcsye6225.me//v1/question/"+questionId+","+
+				"http://prod.venkateshcsye6225.me/v1/question/"+questionId+","+
 				""+
 				",deleteanswer,"+getHashValue.hashCode());
 		long end = System.currentTimeMillis();
