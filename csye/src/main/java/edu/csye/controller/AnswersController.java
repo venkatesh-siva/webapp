@@ -96,7 +96,7 @@ public class AnswersController {
 			String getHashValue = user.getUsername()+questionId+answerId+answer.getAnswer_text();
 			snsClient.publish(user.getUsername()+","+questionId+","+answer.getAnswer_id()+","+
 					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+","+
-					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+"/answer/"+answer.getAnswer_id()+
+					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+"/answer/"+answerId+
 					",updateanswer,"+getHashValue.hashCode());
 			//snsClient.publish(user.getUsername()+","+questionId+",updateanswer");
 		}
