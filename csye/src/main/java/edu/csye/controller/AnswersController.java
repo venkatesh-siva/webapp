@@ -66,9 +66,15 @@ public class AnswersController {
 		String userId = userPrincipal.getUserID();
 
 		Answer storedData = answerService.createAnswer(questionId,answer, auth, userId);
-		Question question = questionService.getQuestion(questionId);
-		User user = userService.fetchUserById(question.getUser_id());
-		snsClient.publish(user.getUsername()+","+questionId+",createanswer");
+		if(storedData!=null) {
+			Question question = questionService.getQuestion(questionId);
+			User user = userService.fetchUserById(question.getUser_id());
+			String getHashValue = user.getUsername()+questionId+storedData.getAnswer_id()+storedData.getAnswer_text();
+			snsClient.publish(user.getUsername()+","+questionId+","+storedData.getAnswer_id()+
+					"http://prod.venkateshcsye6225.me//v1/question/"+questionId+","+
+					"http://prod.venkateshcsye6225.me//v1/question/"+questionId+"/answer/"+storedData.getAnswer_id()+
+					",createanswer,"+getHashValue.hashCode());
+		}
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by createAnswer API " + timeTaken + "ms");
@@ -84,9 +90,16 @@ public class AnswersController {
 		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
 		String userId = userPrincipal.getUserID();
 		answerService.updateAnswer(questionId, answerId, answer, auth, userId);
-		Question question = questionService.getQuestion(questionId);
-		User user = userService.fetchUserById(question.getUser_id());
-		snsClient.publish(user.getUsername()+","+questionId+",updateanswer");
+		if(answer!=null) {
+			Question question = questionService.getQuestion(questionId);
+			User user = userService.fetchUserById(question.getUser_id());
+			String getHashValue = user.getUsername()+questionId+answer.getAnswer_id()+answer.getAnswer_text();
+			snsClient.publish(user.getUsername()+","+questionId+","+answer.getAnswer_id()+
+					"http://prod.venkateshcsye6225.me//v1/question/"+questionId+","+
+					"http://prod.venkateshcsye6225.me//v1/question/"+questionId+"/answer/"+answer.getAnswer_id()+
+					",updateanswer,"+getHashValue.hashCode());
+			//snsClient.publish(user.getUsername()+","+questionId+",updateanswer");
+		}
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by updateAnswer API " + timeTaken + "ms");
@@ -115,9 +128,14 @@ public class AnswersController {
 		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
 		String userId = userPrincipal.getUserID();
 		answerService.deleteAnswer(questionId, answerId, auth, userId);
+		
 		Question question = questionService.getQuestion(questionId);
 		User user = userService.fetchUserById(question.getUser_id());
-		snsClient.publish(user.getUsername()+","+questionId+",deleteanswer");
+		String getHashValue = user.getUsername()+questionId+answerId;
+		snsClient.publish(user.getUsername()+","+questionId+","+answerId+
+				"http://prod.venkateshcsye6225.me//v1/question/"+questionId+","+
+				""+
+				",deleteanswer,"+getHashValue.hashCode());
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by deleteAnswer API " + timeTaken + "ms");
