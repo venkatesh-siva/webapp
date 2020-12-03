@@ -94,7 +94,7 @@ public class AnswersController {
 			Question question = questionService.getQuestion(questionId);
 			User user = userService.fetchUserById(question.getUser_id());
 			String getHashValue = user.getUsername()+questionId+answerId+answer.getAnswer_text();
-			snsClient.publish(user.getUsername()+","+questionId+","+answer.getAnswer_id()+","+
+			snsClient.publish(user.getUsername()+","+questionId+","+answerId+","+
 					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+","+
 					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+"/answer/"+answerId+
 					",updateanswer,"+getHashValue.hashCode());
