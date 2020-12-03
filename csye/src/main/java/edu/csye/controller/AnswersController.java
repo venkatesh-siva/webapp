@@ -90,7 +90,7 @@ public class AnswersController {
 		UserPrincipal userPrincipal = (UserPrincipal) ((Authentication)principal).getPrincipal();
 		String userId = userPrincipal.getUserID();
 		answerService.updateAnswer(questionId, answerId, answer, auth, userId);
-		if(answer!=null) {
+		//if(answer!=null) {
 			Question question = questionService.getQuestion(questionId);
 			User user = userService.fetchUserById(question.getUser_id());
 			String getHashValue = user.getUsername()+questionId+answerId+answer.getAnswer_text();
@@ -99,7 +99,7 @@ public class AnswersController {
 					"http://prod.venkateshcsye6225.me/v1/question/"+questionId+"/answer/"+answerId+
 					",updateanswer,"+getHashValue.hashCode());
 			//snsClient.publish(user.getUsername()+","+questionId+",updateanswer");
-		}
+		//}
 		long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by updateAnswer API " + timeTaken + "ms");
