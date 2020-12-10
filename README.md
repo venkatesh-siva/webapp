@@ -21,3 +21,6 @@
     Cd csye
 
     mvn spring-boot:run
+
+### Command to import files
+aws acm import-certificate --certificate fileb://Certificate.pem --certificate-chain fileb://CertificateChain.pem --private-key fileb://PrivateKey.pem
