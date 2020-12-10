@@ -11,6 +11,8 @@ on:
   push:
     branches: [ master ]
 
+  workflow_dispatch:
+
 jobs:
   ci_cd:
     runs-on: ubuntu-latest
